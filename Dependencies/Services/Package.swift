@@ -4,23 +4,29 @@
 import PackageDescription
 
 let package = Package(
-    name: "Core",
+    name: "Services",
     platforms: [
         .iOS(.v17)
     ],
     products: [
         .library(
-            name: "Core",
-            targets: ["Core"]
+            name: "Services",
+            targets: ["Services"]
         ),
+    ],
+    dependencies: [
+        .package(name: "Core", path: "../Core")
     ],
     targets: [
         .target(
-            name: "Core"
+            name: "Services",
+            dependencies: [
+                "Core"
+            ]
         ),
         .testTarget(
-            name: "CoreTests",
-            dependencies: ["Core"]
+            name: "ServicesTests",
+            dependencies: ["Services", "Core"]
         ),
     ]
 )
