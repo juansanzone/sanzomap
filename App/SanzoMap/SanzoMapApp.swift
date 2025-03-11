@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import MapFeature
 
 @main
 struct SanzoMapApp: App {
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MapFeature.MainView()
         }
     }
 }

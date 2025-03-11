@@ -1,15 +1,14 @@
 //
-//  MainView.swift
-//  SanzoMap
+//  MapFeatureView.swift
+//  MapFeature
 //
 //  Created by Juan Sanzone on 11/03/2025.
 //
 
 import CoreUI
-import SwiftUI
 import Services
 
-struct MainView: View {
+struct MapFeatureView: View {
     /// This is temporary. Just to test the packages integration.
     private let service: Services.CityService = .init()
     @State private var cities: [Services.CityService.CityDTO] = .init()
@@ -30,8 +29,8 @@ struct MainView: View {
     }
 }
 
-/// This is temporary basic ui. Just for test.
-private extension MainView {
+/// This is temporary. Just to test the packages integration.
+private extension MapFeatureView {
     var listView: some View {
         List(cities) { city in
             CoreUI.rowView(
