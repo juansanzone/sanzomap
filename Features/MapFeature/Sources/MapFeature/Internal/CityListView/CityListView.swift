@@ -1,5 +1,5 @@
 //
-//  MapFeatureView.swift
+//  CityListView.swift
 //  MapFeature
 //
 //  Created by Juan Sanzone on 11/03/2025.
@@ -8,12 +8,11 @@
 import Core
 import CoreUI
 
-struct MapFeatureView: View {
-    @StateObject private var viewModel: MapFeatureView.ViewModel = .init(cityRepository: .init())
+struct CityListView: View {
+    @StateObject private var viewModel: CityListView.ViewModel = .init(cityRepository: .init())
     
     @State private var searchText = ""
     @State private var cancellables = Set<AnyCancellable>()
-    
     private let subject = PassthroughSubject<String, Never>()
     
     var body: some View {
@@ -41,12 +40,12 @@ struct MapFeatureView: View {
     }
 }
 
-private extension MapFeatureView {
+private extension CityListView {
     @ViewBuilder
     var contentView: some View {
         switch viewModel.state.cities {
         case .loading:
-            skeletonView
+            CoreUI.SkeletonListView()
         case let .loaded(cities):
             listView(cities)
         case let .error(error):
@@ -56,18 +55,6 @@ private extension MapFeatureView {
                 }
             }
         }
-    }
-    
-    var skeletonView: some View {
-        List {
-            ForEach(0..<5, id: \.self) { _ in
-                CoreUI.RowView(
-                    title: "Some title...",
-                    subtitle: "Some subtitle"
-               )
-            }
-        }
-        .redacted(reason: .placeholder)
     }
     
     func listView(_ cities: [City]) -> some View {

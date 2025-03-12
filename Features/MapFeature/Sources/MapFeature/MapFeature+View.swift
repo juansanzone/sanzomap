@@ -12,7 +12,7 @@ public extension MapFeature {
         public init() {}
         
         public var body: some View {
-            MapFeatureView()
+            CityListView()
         }
     }
 }

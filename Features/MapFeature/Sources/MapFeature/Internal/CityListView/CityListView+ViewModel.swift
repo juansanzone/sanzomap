@@ -1,5 +1,5 @@
 //
-//  MapFeatureView+ViewModel.swift
+//  CityListView+ViewModel.swift
 //  MapFeature
 //
 //  Created by Juan Sanzone on 11/03/2025.
@@ -10,18 +10,20 @@ import Combine
 import Services
 import SwiftUI
 
-extension MapFeatureView {
+extension CityListView {
     final class ViewModel: Core.Architecture.ObservableViewModel {
         @Published var state: State
         private let cityRepository: CityRepository
         private var cancellables = Set<AnyCancellable>()
         
+        /// View state source of truth
         struct State: Core.Architecture.KeyPathMutable, Equatable {
             let navigationTitle: String = "Cities"
             let searchBarTitle: String = "Search cities"
             var cities: Core.Foundation.DataState<[City]> = .loading
         }
         
+        /// View Actions
         enum Action: Equatable {
             case onAppear
             case search(String)
@@ -37,7 +39,7 @@ extension MapFeatureView {
 }
 
 /// Process UI Actions
-extension MapFeatureView.ViewModel {
+extension CityListView.ViewModel {
     func send(_ action: Action) async {
         switch action {
         case .onAppear:
@@ -52,7 +54,7 @@ extension MapFeatureView.ViewModel {
     }
 }
 
-private extension MapFeatureView.ViewModel {
+private extension CityListView.ViewModel {
     func bindRepositoryChanges() {
         cityRepository.$searchResults
             .receive(on: DispatchQueue.main)
