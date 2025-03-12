@@ -16,8 +16,13 @@ struct CityListView: View {
     @State private var cancellables = Set<AnyCancellable>()
     @State private var subject = PassthroughSubject<String, Never>()
     
+    private let onCitySelected: ((City) -> Void)?
+    
+    init(onCitySelected: ((City) -> Void)? = nil) {
+        self.onCitySelected = onCitySelected
+    }
+    
     var body: some View {
-        
         NavigationStack(path: $router.navigationPath) {
             contentView
                 .navigationTitle(viewModel.state.navigationTitle)
@@ -72,7 +77,11 @@ private extension CityListView {
                 title: city.displayTitle,
                 subtitle: "\(city.coord.lat), \(city.coord.lon)"
             ) {
-                router.push(screen: .mapView(city))
+                if let onCitySelected {
+                    onCitySelected(city)
+                } else {
+                    router.push(screen: .mapView(city))
+                }
             }
         }
     }

@@ -19,6 +19,13 @@ struct City: Identifiable {
         country = dto.country
         coord = dto.coord
     }
+    
+    init(_ id: Int, name: String, country: String, coord: Coord) {
+        self.id = id
+        self.name = name
+        self.country = country
+        self.coord = coord
+    }
 }
 
 extension City {
@@ -26,6 +33,10 @@ extension City {
     
     var displayTitle: String {
         "\(name.capitalized), \(country.uppercased())"
+    }
+    
+    static var defaultPoint: Self {
+        City(0, name: "Cupertino", country: "US", coord: .init(lat: 37.322998, lon: -122.032182))
     }
 }
 

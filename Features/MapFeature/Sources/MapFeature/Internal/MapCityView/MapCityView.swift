@@ -9,12 +9,12 @@ import CoreUI
 import MapKit
 
 struct MapCityView: View {
-    @State private var region: MKCoordinateRegion
     private let city: City
+    private let region: MKCoordinateRegion
     
     init(city: City) {
         self.city = city
-        self._region = State(initialValue: MKCoordinateRegion(
+        self.region = MKCoordinateRegion(
             center: CLLocationCoordinate2D(
                 latitude: city.coord.lat,
                 longitude: city.coord.lon
@@ -23,7 +23,7 @@ struct MapCityView: View {
                 latitudeDelta: 0.05,
                 longitudeDelta: 0.05
             )
-        ))
+        )
     }
     
     var body: some View {
@@ -49,7 +49,7 @@ private extension MapCityView {
     }
     
     var mapView: some View {
-        Map(coordinateRegion: $region, annotationItems: [city]) { city in
+        Map(coordinateRegion: .constant(region), annotationItems: [city]) { city in
             MapMarker(
                 coordinate: CLLocationCoordinate2D(
                     latitude: city.coord.lat,
