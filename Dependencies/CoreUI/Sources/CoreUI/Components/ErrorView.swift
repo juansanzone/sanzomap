@@ -44,11 +44,13 @@ public extension CoreUI {
                 VStack {
                     Text(title)
                         .font(imageName == nil ? .body : .headline)
+                        .fontDesign(.rounded)
                         .foregroundColor(.primary.opacity(0.8))
                         .multilineTextAlignment(.center)
                     if let error {
                         Text(error.localizedDescription)
                             .font(.callout)
+                            .fontDesign(.rounded)
                             .foregroundColor(.gray)
                             .multilineTextAlignment(.center)
                     }

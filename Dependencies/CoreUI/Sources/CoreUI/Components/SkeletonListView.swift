@@ -9,7 +9,7 @@ import SwiftUI
 
 public extension CoreUI {
     public struct SkeletonListView: View {
-       private let numberOfItems: Int
+        private let numberOfItems: Int
         
         public init(numberOfItems: Int = 5) {
             self.numberOfItems = numberOfItems
@@ -20,8 +20,9 @@ public extension CoreUI {
                 ForEach(0..<numberOfItems, id: \.self) { _ in
                     RowView(
                         title: "Some title...",
-                        subtitle: "Some subtitle"
-                   )
+                        subtitle: "Some subtitle",
+                        bulletColor: Color.gray
+                    ) {}
                 }
             }
             .redacted(reason: .placeholder)

@@ -34,3 +34,9 @@ extension City: Equatable {
         lhs.id == rhs.id
     }
 }
+
+extension City: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

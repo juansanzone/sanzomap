@@ -9,10 +9,13 @@ import CoreUI
 
 public extension MapFeature {
     struct MainView: View {
+        @StateObject private var router: MapFeatureRouter = .init()
+        
         public init() {}
         
         public var body: some View {
             CityListView()
+                .environmentObject(router)
         }
     }
 }

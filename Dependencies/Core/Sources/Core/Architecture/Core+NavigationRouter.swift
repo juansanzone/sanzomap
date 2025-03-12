@@ -31,13 +31,13 @@ public extension Core.Architecture {
     }
 }
 
-extension Core.Architecture.NavigationRouter {
+public extension Core.Architecture.NavigationRouter {
     func setup(willChangeNavigationPathCallback callback: (() -> Void)?) {
         willChangeNavigationPathCallback = callback
     }
 }
 
-extension Core.Architecture.NavigationRouter {
+public extension Core.Architecture.NavigationRouter {
     func push(screen: Destination) {
         push(screen)
     }
@@ -60,7 +60,7 @@ extension Core.Architecture.NavigationRouter {
     }
 }
 
-extension Core.Architecture.NavigationRouter {
+public extension Core.Architecture.NavigationRouter {
     func present(screen: Destination) {
         willChangeNavigationPathCallback?()
         presentingDestination = screen

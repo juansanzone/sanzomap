@@ -6,7 +6,6 @@
 //
 
 import Core
-import Combine
 import Services
 import SwiftUI
 
@@ -25,6 +24,7 @@ extension CityListView {
         
         /// View Actions
         enum Action: Equatable {
+            case onLoad
             case onAppear
             case search(String)
             case retry
@@ -42,8 +42,11 @@ extension CityListView {
 extension CityListView.ViewModel {
     func send(_ action: Action) async {
         switch action {
-        case .onAppear:
+        case .onLoad:
             await loadInitialData()
+        case .onAppear:
+            break
+            //bindRepositoryChanges()
         case .search(let searchTerm):
             await cityRepository.searchCities(with: searchTerm)
         case .retry:
