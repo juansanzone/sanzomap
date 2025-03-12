@@ -10,7 +10,7 @@ import SwiftUI
 public extension Core.Architecture {
     @MainActor
     protocol ObservableViewModel: ObservableObject {
-        associatedtype State: Core.Architecture.KeyPathMutable, Equatable
+        associatedtype State: KeyPathMutable, Equatable
         associatedtype Action: Equatable
 
         var state: State { get }

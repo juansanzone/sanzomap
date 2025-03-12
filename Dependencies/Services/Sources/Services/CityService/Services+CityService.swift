@@ -8,7 +8,13 @@
 import Core
 
 public extension Services {
-    struct CityService {
+    public protocol CityServiceProtocol {
+        func fetchCities() async throws -> [Services.CityService.CityDTO]
+    }
+}
+
+public extension Services {
+    struct CityService: Services.CityServiceProtocol {
         private let networkService: Core.Networking.NetworkServicing
         
         /// We are using empty custom`headers` and `parameters`for that Service. But we could add if needed.

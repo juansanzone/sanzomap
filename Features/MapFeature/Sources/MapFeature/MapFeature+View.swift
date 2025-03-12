@@ -1,5 +1,5 @@
 //
-//  MainView.swift
+//  MapFeature+MainView.swift
 //  MapFeature
 //
 //  Created by Juan Sanzone on 11/03/2025.

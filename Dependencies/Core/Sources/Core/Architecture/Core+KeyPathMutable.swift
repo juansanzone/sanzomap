@@ -8,25 +8,15 @@
 import Foundation
 
 public extension Core.Architecture {
-    protocol KeyPathMutable {
+    public protocol KeyPathMutable {
         func modifying<T>(_ keyPath: WritableKeyPath<Self, T>, to value: T) -> Self
     }
 }
 
-extension Core.Architecture.KeyPathMutable {
-    public func modifying<T>(_ keyPath: WritableKeyPath<Self, T>, to value: T) -> Self {
-        modified { $0[keyPath: keyPath] = value }
-    }
-
-    static func .= <T>(lhs: Self, rhs: (WritableKeyPath<Self, T>, T)) -> Self {
-        lhs.modifying(rhs.0, to: rhs.1)
-    }
-    
-    private func modified(_ update: (inout Self) -> Void) -> Self {
-        var viewState = self
-        update(&viewState)
-        return viewState
+public extension Core.Architecture.KeyPathMutable {
+    func modifying<T>(_ keyPath: WritableKeyPath<Self, T>, to value: T) -> Self {
+        var copy = self
+        copy[keyPath: keyPath] = value
+        return copy
     }
 }
-
-infix operator .=: AdditionPrecedence

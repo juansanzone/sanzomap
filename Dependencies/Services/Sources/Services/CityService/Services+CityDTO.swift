@@ -5,7 +5,7 @@
 //  Created by Juan Sanzone on 10/03/2025.
 //
 
-import Foundation
+import Core
 
 public extension Services.CityService {
     struct CityDTO: Codable {
