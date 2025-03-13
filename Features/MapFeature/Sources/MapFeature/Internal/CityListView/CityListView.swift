@@ -9,26 +9,32 @@ import Core
 import CoreUI
 
 struct CityListView: View {
-    @EnvironmentObject private var router: MapFeatureRouter
-    @StateObject private var viewModel: CityListView.ViewModel = .init(cityRepository: .init())
+    @StateObject private var viewModel: CityListView.ViewModel
     
     @State private var searchText = ""
     @State private var cancellables = Set<AnyCancellable>()
     @State private var subject = PassthroughSubject<String, Never>()
     
-    private let onCitySelected: ((City) -> Void)?
-    
-    init(onCitySelected: ((City) -> Void)? = nil) {
-        self.onCitySelected = onCitySelected
+    init(router: MapFeatureRouter) {
+        _viewModel = StateObject(wrappedValue: .init(cityRepository: .init(), router: router))
     }
     
     var body: some View {
-        NavigationStack(path: $router.navigationPath) {
-            contentView
+        if viewModel.state.isLandscape {
+            landscapeView
+        } else {
+            mainView
+        }
+    }
+}
+
+private extension CityListView {
+    var mainView: some View {
+        NavigationStack(path: $viewModel.router.navigationPath) {
+            contentListView
                 .navigationTitle(viewModel.state.navigationTitle)
                 .navigationDestination(for: MapFeatureRouter.Destination.self) { destination in
-                    router.viewFor(for: destination)
-                        .environmentObject(router)
+                    viewModel.router.viewFor(for: destination)
                 }
         }
         .searchable(text: $searchText, prompt: viewModel.state.searchBarTitle)
@@ -36,9 +42,6 @@ struct CityListView: View {
             subject.send(newValue)
         }
         .onAppear {
-            Task {
-                await viewModel.send(.onAppear)
-            }
             subject
                 .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
                 .sink { newValue in
@@ -49,14 +52,20 @@ struct CityListView: View {
                 .store(in: &cancellables)
         }
         .task {
-            await viewModel.send(.onLoad)
+            await viewModel.send(.onAppear)
         }
     }
-}
-
-private extension CityListView {
+    
+    var landscapeView: some View {
+        HStack(spacing: .Space.zero) {
+            mainView
+            MapCityView(city: viewModel.state.selectedCity)
+        }
+        .ignoresSafeArea()
+    }
+    
     @ViewBuilder
-    var contentView: some View {
+    var contentListView: some View {
         switch viewModel.state.cities {
         case .loading:
             CoreUI.SkeletonListView()
@@ -77,10 +86,8 @@ private extension CityListView {
                 title: city.displayTitle,
                 subtitle: "\(city.coord.lat), \(city.coord.lon)"
             ) {
-                if let onCitySelected {
-                    onCitySelected(city)
-                } else {
-                    router.push(screen: .mapView(city))
+                Task {
+                    await viewModel.send(.selectCity(city))
                 }
             }
         }

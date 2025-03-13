@@ -37,8 +37,8 @@ public extension CoreUI {
                     VStack(spacing: .Space.xSmall) {
                         Text(title)
                             .font(.headline)
+                            .fontWeight(.regular)
                             .fontDesign(.rounded)
-                            .foregroundStyle(.primary.opacity(0.8))
                             .fullWidth()
                         HStack(spacing: .Space.xSmall) {
                             Circle()
@@ -55,6 +55,7 @@ public extension CoreUI {
                         .foregroundColor(Color.gray)
                 }
             }
+            .foregroundStyle(.primary)
         }
     }
 }

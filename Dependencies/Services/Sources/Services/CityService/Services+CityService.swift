@@ -8,7 +8,7 @@
 import Core
 
 public extension Services {
-    public protocol CityServiceProtocol {
+    protocol CityServiceProtocol {
         func fetchCities() async throws -> [Services.CityService.CityDTO]
     }
 }

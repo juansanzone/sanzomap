@@ -9,6 +9,8 @@ import SwiftUI
 
 public extension CGFloat {
     enum Space {
+        /// (0 points)
+        public static let zero: CGFloat = 0
         /// (2 points)
         public static let xxSmall: CGFloat = 2
         /// (4 points)
