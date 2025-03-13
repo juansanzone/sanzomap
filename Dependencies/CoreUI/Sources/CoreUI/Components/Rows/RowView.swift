@@ -14,26 +14,33 @@ public extension CoreUI {
         private let imageName: String
         private let bulletColor: Color
         private let onTapAction: () -> Void
+        private let onFavToggle: (Bool) -> Void
+        
+        @State private var isFav: Bool
         
         public init(
             title: String,
             subtitle: String,
             imageName: String = "chevron.right",
             bulletColor: Color = .pink,
+            isFav: Bool,
+            onFavToggle: @escaping (Bool) -> Void,
             onTapAction: @escaping () -> Void
         ) {
             self.title = title
             self.subtitle = subtitle
             self.imageName = imageName
             self.bulletColor = bulletColor
+            self.onFavToggle = onFavToggle
             self.onTapAction = onTapAction
+            _isFav = State(initialValue: isFav)
         }
         
         public var body: some View {
-            Button {
-                onTapAction()
-            } label: {
-                HStack {
+            HStack {
+                Button {
+                    onTapAction()
+                } label: {
                     VStack(spacing: .Space.xSmall) {
                         Text(title)
                             .font(.headline)
@@ -51,11 +58,18 @@ public extension CoreUI {
                                 .fullWidth()
                         }
                     }
-                    Image(systemName: imageName)
-                        .foregroundColor(Color.gray)
                 }
+                .tint(Color.primary)
             }
-            .foregroundStyle(.primary)
+            .swipeActions(edge: .trailing) {
+                Button {
+                    isFav.toggle()
+                    onFavToggle(isFav)
+                } label: {
+                    Image(systemName: "star.fill")
+                }
+                .tint(isFav ? .yellow : .gray)
+            }
         }
     }
 }

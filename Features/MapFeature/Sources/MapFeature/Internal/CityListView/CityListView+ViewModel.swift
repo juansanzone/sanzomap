@@ -24,6 +24,7 @@ extension CityListView {
             var selectedCity: City = .defaultCity
             var cities: Core.Foundation.DataState<[City]> = .loading
             var screenOrientation: UIDeviceOrientation
+            var isShowingOnlyFavorites: Bool = false
             
             var isLandscape: Bool {
                 screenOrientation == .landscapeLeft || screenOrientation == .landscapeRight
@@ -36,6 +37,8 @@ extension CityListView {
             case search(String)
             case retry
             case selectCity(City)
+            case updateCity(city: City, isFav: Bool)
+            case toggleFavoritesFilter
         }
         
         init(
@@ -69,6 +72,10 @@ extension CityListView.ViewModel {
             if !state.isLandscape {
                 router.push(screen: .mapView(selectedCity))
             }
+        case let .updateCity(targetCity, isFavorite):
+            cityRepository.updateCity(targetCity, isFavorite: isFavorite)
+        case .toggleFavoritesFilter:
+            state = state.modifying(\.isShowingOnlyFavorites, to: !state.isShowingOnlyFavorites)
         }
     }
 }

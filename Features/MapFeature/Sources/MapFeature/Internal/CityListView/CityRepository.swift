@@ -95,6 +95,16 @@ final class CityRepository: ObservableObject {
             searchResults = []
         }
     }
+    
+    func updateCity(_ city: City, isFavorite: Bool) {
+        do {
+            city.isFavorite = isFavorite
+            try modelContext.save()
+            Core.Logger.debug("Update City fav status success")
+        } catch {
+            Core.Logger.error(error, message: "Failed to update city fav status")
+        }
+    }
 }
 
 private extension CityRepository {

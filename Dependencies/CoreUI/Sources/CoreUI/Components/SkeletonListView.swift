@@ -21,7 +21,9 @@ public extension CoreUI {
                     RowView(
                         title: "Some title...",
                         subtitle: "Some subtitle",
-                        bulletColor: Color.gray
+                        bulletColor: Color.gray,
+                        isFav: false,
+                        onFavToggle: { _ in }
                     ) {}
                 }
             }

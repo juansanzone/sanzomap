@@ -36,6 +36,11 @@ private extension CityListView {
                 .navigationDestination(for: MapFeatureRouter.Destination.self) { destination in
                     viewModel.router.viewFor(for: destination)
                 }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        favFilterButtonView
+                    }
+                }
         }
         .searchable(text: $searchText, prompt: viewModel.state.searchBarTitle)
         .onChange(of: searchText) { _, newValue in
@@ -83,11 +88,28 @@ private extension CityListView {
         }
     }
     
+    var favFilterButtonView: some View {
+        Button {
+            Task {
+                await viewModel.send(.toggleFavoritesFilter)
+            }
+        } label: {
+            Image(systemName: viewModel.state.isShowingOnlyFavorites ? "star.fill" : "star")
+        }
+        .tint(.yellow)
+    }
+    
     func listView(_ cities: [City]) -> some View {
         List(cities) { city in
             CoreUI.RowView(
                 title: city.displayTitle,
-                subtitle: "\(city.coord.lat), \(city.coord.lon)"
+                subtitle: "\(city.coord.lat), \(city.coord.lon)",
+                isFav: city.isFavorite,
+                onFavToggle: { isFavorite in
+                    Task {
+                        await viewModel.send(.updateCity(city: city, isFav: isFavorite))
+                    }
+                }
             ) {
                 Task {
                     await viewModel.send(.selectCity(city))
