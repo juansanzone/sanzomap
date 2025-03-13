@@ -25,3 +25,8 @@ public extension Core {
 public extension Core {
     enum Foundation {}
 }
+
+/// Logger Namespace
+public extension Core {
+    enum Logger {}
+}

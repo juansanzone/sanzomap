@@ -38,6 +38,7 @@ public extension Core.Networking {
             
             guard let httpResponse = response as? HTTPURLResponse,
                   (200...299).contains(httpResponse.statusCode) else {
+                Core.Logger.error(NetworkError.invalidResponse)
                 throw NetworkError.invalidResponse
             }
             

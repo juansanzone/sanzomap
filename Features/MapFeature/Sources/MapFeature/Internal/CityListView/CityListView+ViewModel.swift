@@ -78,7 +78,10 @@ private extension CityListView.ViewModel {
         cityRepository.$searchResults
             .receive(on: DispatchQueue.main)
             .sink { [weak self] updatedCities in
-                guard let self else { return }
+                guard let self else {
+                    Core.Logger.warning("Guard let fail")
+                    return
+                }
                 self.state = self.state.modifying(\.cities, to: .loaded(updatedCities))
             }
             .store(in: &cancellables)
@@ -89,7 +92,10 @@ private extension CityListView.ViewModel {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] notification in
                 guard let self = self,
-                      let device = notification.object as? UIDevice else { return }
+                      let device = notification.object as? UIDevice else {
+                    Core.Logger.warning("Guard let fail")
+                    return
+                }
                 self.state = self.state.modifying(\.screenOrientation, to: device.orientation)
                 if state.isLandscape {
                     router.popToRoot()
@@ -101,10 +107,13 @@ private extension CityListView.ViewModel {
     func loadInitialData() async {
         do {
             if cityRepository.searchResults.isEmpty {
+                Core.Logger.debug("Requesting inicial data")
                 state = state.modifying(\.cities, to: .loading)
             }
             try await cityRepository.loadInitialData()
+            Core.Logger.debug("Load initial data successfully")
         } catch {
+            Core.Logger.error(error, message: "Failed to load initial data")
             state = state.modifying(\.cities, to: .error(error))
         }
     }
