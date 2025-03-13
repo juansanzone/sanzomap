@@ -76,6 +76,7 @@ extension CityListView.ViewModel {
             cityRepository.updateCity(targetCity, isFavorite: isFavorite)
         case .toggleFavoritesFilter:
             state = state.modifying(\.isShowingOnlyFavorites, to: !state.isShowingOnlyFavorites)
+            cityRepository.showOnlyFavorites = state.isShowingOnlyFavorites
         }
     }
 }

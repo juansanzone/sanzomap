@@ -11,9 +11,15 @@ import Services
 @MainActor
 final class CityRepository: ObservableObject {
     @Published var searchResults: [City] = []
+    @Published var showOnlyFavorites: Bool = false {
+        didSet {
+            searchCities(with: currentSearchTerm)
+        }
+    }
     
     private let service: Services.CityServiceProtocol
     private let maxResults: Int
+    private var currentSearchTerm: String = ""
     
     private let modelContext: ModelContext
     private let modelContainer: ModelContainer
@@ -71,15 +77,20 @@ final class CityRepository: ObservableObject {
     }
     
     func searchCities(with searchTerm: String) {
+        let searchTerm = searchTerm.lowercased()
+        currentSearchTerm = searchTerm
         do {
-            if searchTerm.isEmpty {
+            var predicate: Predicate<City>?
+            
+            if !searchTerm.isEmpty || showOnlyFavorites {
+                predicate = #Predicate<City> { city in
+                    (searchTerm.isEmpty ? true : city.name.starts(with: searchTerm)) && (showOnlyFavorites ? city.isFavorite : true)
+                }
+            }
+            
+            if predicate == nil {
                 searchResults = try fetchAllSortedAndLimited()
             } else {
-                let searchTerm = searchTerm.lowercased()
-                let predicate = #Predicate<City> { city in
-                    city.name.starts(with: searchTerm)
-                }
-                
                 var descriptor = FetchDescriptor<City>(
                     predicate: predicate,
                     sortBy: [
@@ -101,6 +112,7 @@ final class CityRepository: ObservableObject {
             city.isFavorite = isFavorite
             try modelContext.save()
             Core.Logger.debug("Update City fav status success")
+            searchCities(with: currentSearchTerm)
         } catch {
             Core.Logger.error(error, message: "Failed to update city fav status")
         }
