@@ -42,6 +42,9 @@ private extension CityListView {
             subject.send(newValue)
         }
         .onAppear {
+            Task {
+                await viewModel.send(.onAppear)
+            }
             subject
                 .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
                 .sink { newValue in
@@ -50,9 +53,9 @@ private extension CityListView {
                     }
                 }
                 .store(in: &cancellables)
-        }
-        .task {
-            await viewModel.send(.onAppear)
+            Task {
+                await viewModel.send(.search(searchText))
+            }
         }
     }
     

@@ -1,9 +1,26 @@
 import XCTest
+import SwiftData
 @testable import Services
 @testable import MapFeature
 
 @MainActor
 final class CityRepositoryTests: XCTestCase {
+    private var mockContainer: ModelContainer!
+    private var mockContext: ModelContext!
+    
+    override func setUp() async throws {
+        mockContainer = try ModelContainer(
+            for: City.self,
+            configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+        )
+        mockContext = mockContainer.mainContext
+    }
+    
+    override func tearDown() async throws {
+        mockContainer = nil
+        mockContext = nil
+    }
+    
     func test_loadInitialData_success_shouldPopulateSearchResults() async throws {
         let mockService = MockCityService()
         let sampleCities = [
@@ -12,11 +29,11 @@ final class CityRepositoryTests: XCTestCase {
         ]
         mockService.citiesToReturn = sampleCities
         
-        let repository = CityRepository(cityService: mockService, maxResults: 50)
+        let repository = CityRepository(modelContext: mockContext, cityService: mockService, maxResults: 50)
         
         try await repository.loadInitialData()
         
-        XCTAssertEqual(repository.searchResults.count, sampleCities.count, "Should have same count as sample cities")
+        XCTAssertEqual(repository.searchResults.count, sampleCities.count)
         XCTAssertEqual(repository.searchResults[0].displayTitle, "City A, CA")
         XCTAssertEqual(repository.searchResults[1].displayTitle, "City B, CB")
     }
@@ -29,10 +46,10 @@ final class CityRepositoryTests: XCTestCase {
         ]
         mockService.citiesToReturn = sampleCities
         
-        let repository = CityRepository(cityService: mockService, maxResults: 1)
+        let repository = CityRepository(modelContext: mockContext, cityService: mockService, maxResults: 1)
         try await repository.loadInitialData()
         
-        XCTAssertEqual(repository.searchResults.count, 1, "Should only return one city due to maxResults limit")
+        XCTAssertEqual(repository.searchResults.count, 1)
     }
     
     func test_loadInitialData_failure_shouldThrowError() async throws {
@@ -40,13 +57,13 @@ final class CityRepositoryTests: XCTestCase {
         let sampleError = NSError(domain: "Test", code: 1, userInfo: nil)
         mockService.errorToThrow = sampleError
         
-        let repository = CityRepository(cityService: mockService, maxResults: 50)
+        let repository = CityRepository(modelContext: mockContext, cityService: mockService, maxResults: 50)
         
         do {
             try await repository.loadInitialData()
             XCTFail("Expected an error but loadInitialData succeeded")
         } catch {
-            XCTAssertEqual((error as NSError).domain, sampleError.domain, "Should throw the correct error")
+            XCTAssertEqual((error as NSError).domain, sampleError.domain)
         }
     }
     
@@ -58,17 +75,14 @@ final class CityRepositoryTests: XCTestCase {
             MockCity(_id: 3, name: "Boston", country: "USA", coord: .init(lat: 300, lon: 300))
         ]
         mockService.citiesToReturn = sampleCities
-        let repository = CityRepository(cityService: mockService, maxResults: 50)
+        let repository = CityRepository(modelContext: mockContext, cityService: mockService, maxResults: 50)
         
         try await repository.loadInitialData()
         
         repository.searchCities(with: "new")
         
-        XCTAssertEqual(repository.searchResults.count, 2, "Should filter and return 2 cities")
-        XCTAssertTrue(
-            repository.searchResults.allSatisfy { $0.name.lowercased().hasPrefix("new") },
-            "All returned cities should have names starting with 'new'"
-        )
+        XCTAssertEqual(repository.searchResults.count, 2)
+        XCTAssertTrue(repository.searchResults.allSatisfy { $0.name.lowercased().hasPrefix("new") })
     }
     
     func test_searchCities_forInvalidSearchTerm_shouldReturnZeroCities() async throws {
@@ -79,44 +93,44 @@ final class CityRepositoryTests: XCTestCase {
             MockCity(_id: 3, name: "Boston", country: "USA", coord: .init(lat: 300, lon: 300))
         ]
         mockService.citiesToReturn = sampleCities
-        let repository = CityRepository(cityService: mockService, maxResults: 50)
+        let repository = CityRepository(modelContext: mockContext, cityService: mockService, maxResults: 50)
         
         try await repository.loadInitialData()
         
         repository.searchCities(with: "888494")
         
-        XCTAssertEqual(repository.searchResults.count, 0, "Should filter and return 0 cities")
+        XCTAssertEqual(repository.searchResults.count, 0)
     }
     
     func test_searchCities_withPrefix_asDocumentCriteria_shouldReturnExpectedCities() async throws {
         let mockService = MockCityService()
         let sampleCities = [
-          MockCity(_id: 1, name: "Alabama", country: "US", coord: .init(lat: 0, lon: 0)),
-          MockCity(_id: 2, name: "Albuquerque", country: "US", coord: .init(lat: 0, lon: 0)),
-          MockCity(_id: 3, name: "Anaheim", country: "US", coord: .init(lat: 0, lon: 0)),
-          MockCity(_id: 4, name: "Arizona", country: "US", coord: .init(lat: 0, lon: 0)),
-          MockCity(_id: 5, name: "Sydney", country: "AU", coord: .init(lat: 0, lon: 0))
+            MockCity(_id: 1, name: "Alabama", country: "US", coord: .init(lat: 0, lon: 0)),
+            MockCity(_id: 2, name: "Albuquerque", country: "US", coord: .init(lat: 0, lon: 0)),
+            MockCity(_id: 3, name: "Anaheim", country: "US", coord: .init(lat: 0, lon: 0)),
+            MockCity(_id: 4, name: "Arizona", country: "US", coord: .init(lat: 0, lon: 0)),
+            MockCity(_id: 5, name: "Sydney", country: "AU", coord: .init(lat: 0, lon: 0))
         ]
         mockService.citiesToReturn = sampleCities
-        let repository = CityRepository(cityService: mockService, maxResults: 50)
+        let repository = CityRepository(modelContext: mockContext, cityService: mockService, maxResults: 50)
 
         try await repository.loadInitialData()
 
         repository.searchCities(with: "A")
-        XCTAssertEqual(repository.searchResults.count, 4, "Prefix 'A' should return 4 cities")
+        XCTAssertEqual(repository.searchResults.count, 4)
 
         repository.searchCities(with: "s")
-        XCTAssertEqual(repository.searchResults.count, 1, "Prefix 's' should return 1 city")
+        XCTAssertEqual(repository.searchResults.count, 1)
         XCTAssertEqual(repository.searchResults.first?.displayTitle, "Sydney, AU")
 
         repository.searchCities(with: "Al")
-        XCTAssertEqual(repository.searchResults.count, 2, "Prefix 'Al' should return 2 cities")
+        XCTAssertEqual(repository.searchResults.count, 2)
         let alCities = repository.searchResults.map { $0.displayTitle }
         XCTAssertTrue(alCities.contains("Alabama, US"))
         XCTAssertTrue(alCities.contains("Albuquerque, US"))
 
         repository.searchCities(with: "Alb")
-        XCTAssertEqual(repository.searchResults.count, 1, "Prefix 'Alb' should return 1 city")
+        XCTAssertEqual(repository.searchResults.count, 1)
         XCTAssertEqual(repository.searchResults.first?.displayTitle, "Albuquerque, US")
     }
 }

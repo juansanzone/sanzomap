@@ -59,7 +59,7 @@ extension CityListView.ViewModel {
         case .onAppear:
             await loadInitialData()
         case .search(let searchTerm):
-            await cityRepository.searchCities(with: searchTerm)
+            cityRepository.searchCities(with: searchTerm)
         case .retry:
             /// Just call to `loadInitialData` for this exercice.
             /// But we can decide as a team how to manage retry behaivoir better.
@@ -106,12 +106,12 @@ private extension CityListView.ViewModel {
     
     func loadInitialData() async {
         do {
+            Core.Logger.debug("Getting inicial data")
             if cityRepository.searchResults.isEmpty {
-                Core.Logger.debug("Requesting inicial data")
                 state = state.modifying(\.cities, to: .loading)
             }
             try await cityRepository.loadInitialData()
-            Core.Logger.debug("Load initial data successfully")
+            Core.Logger.debug("Finish to load inicial data")
         } catch {
             Core.Logger.error(error, message: "Failed to load initial data")
             state = state.modifying(\.cities, to: .error(error))

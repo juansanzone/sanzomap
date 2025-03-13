@@ -6,25 +6,30 @@
 //
 
 import Services
+import SwiftData
 
-struct City: Identifiable {
-    let id: Int
-    let name: String
-    let country: String
-    let coord: City.Coord
+@Model
+final class City: Identifiable {
+    @Attribute(.unique) var id: Int
+    var name: String
+    var country: String
+    var coord: City.Coord
+    var isFavorite: Bool
     
     init(dto: Services.CityService.CityDTO) {
         id = dto._id
         name = dto.name.lowercased()
         country = dto.country
         coord = dto.coord
+        isFavorite = false
     }
     
-    init(_ id: Int, name: String, country: String, coord: Coord) {
+    init(_ id: Int, name: String, country: String, coord: Coord, isFavorite: Bool = false) {
         self.id = id
         self.name = name
         self.country = country
         self.coord = coord
+        self.isFavorite = isFavorite
     }
 }
 
@@ -36,7 +41,7 @@ extension City {
     }
     
     static var defaultCity: Self {
-        City(0, name: "Cupertino", country: "US", coord: .init(lat: 37.322998, lon: -122.032182))
+        City(0, name: "Cupertino", country: "US", coord: .init(lat: 37.322998, lon: -122.032182)) as! Self
     }
 }
 
