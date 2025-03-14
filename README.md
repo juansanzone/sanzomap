@@ -47,9 +47,7 @@ A protocol was created to standardize **VM** implementation across Features modu
 
 **Navigation**:  SwiftUI navigation was standardized using a **Router** based on NavigationPath. This provides a solid foundation for navigation inside Feature modules. More details about this approach are covered in the Navigation section.
 
-Several Swift Packages were created to serve as a foundation for developing Features.Below is a basic component diagram, followed by a detailed explanation of each module. 👇👇👇
-
-{{TODO: PUT IMAGE OF COMPONENTS}}
+Several Swift Packages were created to serve as a foundation for developing Features.
 
 ### 📦 Architecture Components
 
@@ -82,6 +80,8 @@ The goal of this logical separation is to provide standardized components that h
 
 - **DataState**: Represents different states like loading, error, and data loaded.
 - **Logger**: A standardized logging component. This could become a separate package in the future, but for now, it remains simple. This supports log system level configuration.
+
+![image](https://github.com/user-attachments/assets/ff7d1861-798b-4d77-ad81-1725bb045f20)
 
 ```
 The log level is set in debug mode during app initialization on the main onAppear().
@@ -220,3 +220,21 @@ For iPad, I did not use preprocessor macros or special cases, as it seemed unnec
 2️⃣
 I did not add unit tests for the main ViewModel due to lack of time.
 However, I believe the most important tests were the ones explicitly requested, which are already covered in `CityRepository`.
+
+### 🖼️ App screens
+#### Portrait
+|Loading|List|Map|
+|-|-|-|
+|![image](https://github.com/user-attachments/assets/f6293100-e278-4cc0-b725-2709fd47b90c)|![image](https://github.com/user-attachments/assets/e68f6564-33de-4c4b-9bc3-812b7e9b1049)|![image](https://github.com/user-attachments/assets/2e16c8e3-7fa7-4b01-a61d-2cd340f1a495)|
+
+|Fav filter|Fav|Unfav|
+|-|-|-|
+|![image](https://github.com/user-attachments/assets/06697975-b6f2-483f-8440-0ce85d3d2025)|![image](https://github.com/user-attachments/assets/d6391643-289d-4bf0-aff2-50c66ca48765)|![image](https://github.com/user-attachments/assets/9d2d4a81-873e-4c1f-89e2-b35e890016ac)|
+
+
+
+
+#### Landscape
+|Map + List|
+|-|
+|![image](https://github.com/user-attachments/assets/b44efd25-25c7-4ec3-951d-df1c9d7f7402)|
