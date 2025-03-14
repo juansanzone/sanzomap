@@ -25,6 +25,8 @@ extension CityListView {
             var cities: Core.Foundation.DataState<[City]> = .loading
             var screenOrientation: UIDeviceOrientation
             var isShowingOnlyFavorites: Bool = false
+            var isFirstTimeLoading: Bool = false
+            var firstTimeLoadingProgress: Int = 0
             
             var isLandscape: Bool {
                 screenOrientation == .landscapeLeft || screenOrientation == .landscapeRight
@@ -91,6 +93,26 @@ private extension CityListView.ViewModel {
                     return
                 }
                 self.state = self.state.modifying(\.cities, to: .loaded(updatedCities))
+            }
+            .store(in: &cancellables)
+        cityRepository.$initialLoadProgress
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] loadingProgress in
+                guard let self else {
+                    Core.Logger.warning("Guard let fail")
+                    return
+                }
+                self.state = self.state.modifying(\.firstTimeLoadingProgress, to: loadingProgress)
+            }
+            .store(in: &cancellables)
+        cityRepository.$isFirstTimeLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isFirstTimeLoading in
+                guard let self else {
+                    Core.Logger.warning("Guard let fail")
+                    return
+                }
+                self.state = self.state.modifying(\.isFirstTimeLoading, to: isFirstTimeLoading)
             }
             .store(in: &cancellables)
     }

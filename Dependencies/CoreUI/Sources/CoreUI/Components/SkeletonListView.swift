@@ -22,8 +22,7 @@ public extension CoreUI {
                         title: "Some title...",
                         subtitle: "Some subtitle",
                         bulletColor: Color.gray,
-                        isFav: false,
-                        onFavToggle: { _ in }
+                        isFav: false
                     ) {}
                 }
             }

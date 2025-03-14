@@ -41,6 +41,7 @@ private extension CityListView {
                         favFilterButtonView
                     }
                 }
+                .disabled(viewModel.state.isFirstTimeLoading)
         }
         .searchable(text: $searchText, prompt: viewModel.state.searchBarTitle)
         .onChange(of: searchText) { _, newValue in
@@ -62,6 +63,9 @@ private extension CityListView {
                 await viewModel.send(.search(searchText))
             }
         }
+        .overlay {
+            initialLoadingProgresView
+        }
     }
     
     var landscapeView: some View {
@@ -69,7 +73,11 @@ private extension CityListView {
             mainView
             MapCityView(city: viewModel.state.selectedCity)
         }
+        .disabled(viewModel.state.isFirstTimeLoading)
         .ignoresSafeArea()
+        .overlay {
+            initialLoadingProgresView
+        }
     }
     
     @ViewBuilder
@@ -78,7 +86,11 @@ private extension CityListView {
         case .loading:
             CoreUI.SkeletonListView()
         case let .loaded(cities):
-            listView(cities)
+            if cities.isEmpty {
+                emptyStateView
+            } else {
+                listView(cities)
+            }
         case let .error(error):
             CoreUI.ErrorView(error: error) {
                 Task {
@@ -99,9 +111,38 @@ private extension CityListView {
         .tint(.yellow)
     }
     
+    var emptyStateView: some View {
+        VStack(spacing: .Space.large) {
+            Text("No cities were found matching that criteria.")
+                .multilineTextAlignment(.center)
+                .fontDesign(.rounded)
+                .font(.callout)
+                .fontWeight(.semibold)
+                .fullWidth(alignment: .center)
+                .padding(.horizontal)
+            if viewModel.state.isShowingOnlyFavorites {
+                VStack(spacing: .Space.xSmall) {
+                    Text("The favorites filter is applied.\nDo you want to turn off?")
+                        .multilineTextAlignment(.center)
+                        .fontDesign(.rounded)
+                        .font(.callout)
+                        .fontWeight(.light)
+                        .fullWidth(alignment: .center)
+                        .padding(.horizontal)
+                    Button("Turn off") {
+                        Task {
+                            await viewModel.send(.toggleFavoritesFilter)
+                        }
+                    }
+                    .tint(.pink)
+                }
+            }
+        }
+    }
+    
     func listView(_ cities: [City]) -> some View {
         List(cities) { city in
-            CoreUI.RowView(
+            CityRowView(
                 title: city.displayTitle,
                 subtitle: "\(city.coord.lat), \(city.coord.lon)",
                 isFav: city.isFavorite,
@@ -115,6 +156,45 @@ private extension CityListView {
                     await viewModel.send(.selectCity(city))
                 }
             }
+        }
+    }
+    
+    @ViewBuilder
+    var initialLoadingProgresView: some View {
+        if viewModel.state.isFirstTimeLoading {
+            VStack(spacing: .Space.small) {
+                Spacer()
+                Text("Fetching and indexing data...")
+                    .font(.title2)
+                    .fontDesign(.rounded)
+                    .fontWeight(.light)
+                    .fullWidth(alignment: .center)
+                Text("\(viewModel.state.firstTimeLoadingProgress) %")
+                    .font(.title2)
+                    .monospaced()
+                    .fontDesign(.rounded)
+                    .fullWidth(alignment: .center)
+                ProgressView(value: CGFloat(viewModel.state.firstTimeLoadingProgress), total: 100)
+                    .tint(.pink)
+                    .padding(.horizontal, .Space.xLarge)
+                Spacer()
+                Text("Be patient.. This will only happen the first time you run the application.")
+                    .multilineTextAlignment(.center)
+                    .fontDesign(.rounded)
+                    .font(.callout)
+                    .fontWeight(.light)
+                    .fullWidth(alignment: .center)
+                    .padding(.bottom, .Space.xLarge * 2)
+                    .padding(.horizontal)
+            }
+            .ignoresSafeArea()
+            .background {
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+            }
+            .cornerRadius(20)
+        } else {
+            EmptyView()
         }
     }
 }

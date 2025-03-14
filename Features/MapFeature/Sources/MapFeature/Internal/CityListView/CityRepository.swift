@@ -16,6 +16,8 @@ final class CityRepository: ObservableObject {
             searchCities(with: currentSearchTerm)
         }
     }
+    @Published var isFirstTimeLoading: Bool = false
+    @Published var initialLoadProgress: Int = 0
     
     private let service: Services.CityServiceProtocol
     private let maxResults: Int
@@ -54,29 +56,51 @@ final class CityRepository: ObservableObject {
             return
         }
         
+        await MainActor.run {
+            isFirstTimeLoading = true
+            initialLoadProgress = 0
+        }
+        
         do {
             Core.Logger.debug("No saved data. Fetching from network 🛜..")
+            await MainActor.run {
+                initialLoadProgress = 1
+            }
             let cityDTOs = try await service.fetchCities()
+            await MainActor.run {
+                initialLoadProgress = 2
+            }
             let cities = cityDTOs.map { City(dto: $0) }
             
             Core.Logger.debug("Fetch from network finished ✅.. [\(cities.count)] results found.")
+            Core.Logger.debug("Saving fetched data  💾")
             
-            Core.Logger.debug("Saving fetched  💾")
-            
-            for city in cities {
+            let totalCount = cities.count
+            for (index, city) in cities.enumerated() {
                 modelContext.insert(city)
+                await MainActor.run {
+                    initialLoadProgress = 2 + (index + 1) * 98 / totalCount
+                }
             }
             
             try modelContext.save()
             
             Core.Logger.debug("All data is saved and fetched  💾")
             searchResults = sortAndLimit(cities)
+            
+            isFirstTimeLoading = false
+            await MainActor.run {
+                initialLoadProgress = 100
+            }
         } catch {
             throw error
         }
     }
     
     func searchCities(with searchTerm: String) {
+        if isFirstTimeLoading {
+            return
+        }
         let searchTerm = searchTerm.lowercased()
         currentSearchTerm = searchTerm
         do {
@@ -111,7 +135,7 @@ final class CityRepository: ObservableObject {
         do {
             city.isFavorite = isFavorite
             try modelContext.save()
-            Core.Logger.debug("Update City fav status success")
+            Core.Logger.debug("Update City fav status: \(isFavorite)")
             searchCities(with: currentSearchTerm)
         } catch {
             Core.Logger.error(error, message: "Failed to update city fav status")
