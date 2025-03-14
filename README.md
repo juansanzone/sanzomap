@@ -250,7 +250,8 @@ While it still follows the MVVM structure correctly, making it more scalable wou
 
 |First app open loading|Empty state for fav filter|
 |-|-|
-|![first time](https://github.com/user-attachments/assets/f68c8fe4-85fe-42dd-a6db-6e64a308f20a)|![not found-fav](https://github.com/user-attachments/assets/6080edd5-c3ad-4a09-819e-0456638b154d)|
+|![first time](https://github.com/user-attachments/assets/f68c8fe4-85fe-42dd-a6db-6e64a308f20a)|![not found-fav](https://github.com/user-attachments/assets/3188c685-aba0-4340-a669-b5225923ea55)|
+
 
 #### Landscape
 |Map + List|
