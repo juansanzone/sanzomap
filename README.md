@@ -139,6 +139,7 @@ It could represent a specific team's module responsible for managing the cities 
 - ***City***:
     - The model object used in the view to represent a City.
     - Also used for persisting the City list and storing its favorite state.
+ - ***CityRowView***: Composition was used to build the `CityView` row on top of the design system `CoreUI.RowView`. This allows the CityView row to handle the favorite swipe action while maintaining consistency with the design system.
 
 ```
 This package contains the entire solution for the challenge,
@@ -189,11 +190,14 @@ Exception: The SwiftUI Map (MapKit) component has high memory consumption and so
 - Automation UI tests 🔴 - I didn't have time
 
 ### 😎 Extra Features
-- 🎁 Save cities locally (remains on each app launch)
+- 🎁 Save cities locally (remains Cities on each app launch)
 - 🎁 Error view with retry for network fetch
 - 🎁 Skeleton loading state view
 - 🎁 Instant ultra-fast app start after the second app start. Since the cities are already stored on the device
-
+- 🎁 % of remain progress for first app open initial loading
+- 🎁 Added empty state for "No results found"
+- 🎁 Added empty state for "No results found." with the option to remove the favorites filter (if applied).
+- 🎁 Added UX interaction to provide feedback when marking a row as favorite / unfav.
 
 ### 🤓 How did I solve the search?
 The initial approach I wanted to implement was a direct-access hash for ***City*** names. This would have provided `O(1)` complexity with instant lookups.
@@ -221,18 +225,32 @@ For iPad, I did not use preprocessor macros or special cases, as it seemed unnec
 I did not add unit tests for the main ViewModel due to lack of time.
 However, I believe the most important tests were the ones explicitly requested, which are already covered in `CityRepository`.
 
+3️⃣
+Incorporating the initial first-time loading percentage feedback made the code messier, as it was added at the last minute as an extra feature.
+The same thing happens for the 🎁 [extra features](https://github.com/juansanzone/sanzomap/issues/13) addded by last minute addition.
+While it still follows the MVVM structure correctly, making it more scalable would require additional time. I'm not satisfied with how the code turned out. Specially in views.
+
+***Areas for Improvement for first-time loading percentage***
+- Better handling of interruptions: Currently, if the process is interrupted, the app ends up in an inconsistent data state.
+- Ability to pause and resume the first-time loading: This is missing and would improve the user experience. Due to time constraints, I couldn't fully address these issues, as this was an extra feature added late in the process.
+
 ### 🖼️ App screens
 #### Portrait
 |Loading|List|Map|
 |-|-|-|
 |![image](https://github.com/user-attachments/assets/f6293100-e278-4cc0-b725-2709fd47b90c)|![image](https://github.com/user-attachments/assets/e68f6564-33de-4c4b-9bc3-812b7e9b1049)|![image](https://github.com/user-attachments/assets/2e16c8e3-7fa7-4b01-a61d-2cd340f1a495)|
 
-|Fav filter|Fav|Unfav|
+|Fav filter|Swipe to fav|Swipe to Unfav|
 |-|-|-|
 |![image](https://github.com/user-attachments/assets/06697975-b6f2-483f-8440-0ce85d3d2025)|![image](https://github.com/user-attachments/assets/d6391643-289d-4bf0-aff2-50c66ca48765)|![image](https://github.com/user-attachments/assets/9d2d4a81-873e-4c1f-89e2-b35e890016ac)|
 
+|Faved row feedback|Unfaved row feddback|Empty state|
+|-|-|-|
+|![faved-feedback](https://github.com/user-attachments/assets/65e710f8-7cfe-480e-8c8f-7111083bb518)|![unfaved-feedback](https://github.com/user-attachments/assets/8058a3f6-a412-48ef-a2ba-cdf2a04983cf)|![not-found](https://github.com/user-attachments/assets/43bbc67c-6bf7-421a-b519-64b6d0963e09)|
 
-
+|First app open loading|Empty state for fav filter|
+|-|-|
+|![first time](https://github.com/user-attachments/assets/f68c8fe4-85fe-42dd-a6db-6e64a308f20a)|![not found-fav](https://github.com/user-attachments/assets/6080edd5-c3ad-4a09-819e-0456638b154d)|
 
 #### Landscape
 |Map + List|
