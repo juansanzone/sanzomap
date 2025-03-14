@@ -150,7 +150,14 @@ which will be discussed in depth detail later 😏
 All packages include Unit Tests, except for the CoreUI package.
 For sure.. the most important tests are in ***CityRepositoryTests***, as they cover the search functionality, which was explicitly required in the challenge document.
 
-{{TODO: PUT IMAGE OF UNIT TEST RESULTS}}
+#### [Core tests]
+![image](https://github.com/user-attachments/assets/ce80582e-c57e-4b59-9612-78c395af9d33)
+
+#### [Services tests]
+![image](https://github.com/user-attachments/assets/e59d0212-546d-4713-a62e-6a2528857721)
+
+#### [Feature tests]
+![image](https://github.com/user-attachments/assets/a26a6d29-2232-4118-b112-b94a47aaec94)
 
 
 ### 💥 Memory Managment + Stress test
@@ -163,7 +170,8 @@ After this initial setup, CPU and memory usage return to normal. This only happe
 The app runs without memory leaks and maintains stable memory usage.
 Exception: The SwiftUI Map (MapKit) component has high memory consumption and some leaks. This is a known MapKit issue with SwiftUI, not related to our implementation. Memory usage increases in landscape mode, where both the map and city list are displayed at the same time.
 
-{{TODO: PUT IMAGE OF MEMORY DEBUG }}
+![image](https://github.com/user-attachments/assets/a8605396-8d3e-435e-9e34-495f1dd586c2)
+
 
 ---
 
@@ -172,8 +180,8 @@ Exception: The SwiftUI Map (MapKit) component has high memory consumption and so
 - Show list of cities ✅
 - Show city details with a Map view ✅
 - Allow search by prefix based on document criteria ✅
-- Favorite / remove from favorites feature
-- Stored locally for Favorite feature (remains on each app launch)
+- Favorite / remove from favorites feature ✅ - (Swipe cell to fav/unfav)
+- Stored locally for Favorite feature (remains on each app launch) ✅
 - Filter by Fav / unfav ✅
 - Landscape and portrait designs support ✅
 - Unit test ✅
@@ -197,9 +205,9 @@ Since prefix search was required and a simple in-memory index was not an option,
 You can find the solution in action inside `CityRepository` object.
 
 ### 🐛 Unhappy points
-I'm not fully satisfied with how landscape/portrait handling was implemented.
 
-While the product looks and works well, I would have preferred to use Split Navigation View, letting the system decide when to switch layouts.
+1️⃣
+I'm not fully satisfied with how landscape/portrait handling was implemented. While the product looks and works well, I would have preferred to use Split Navigation View, letting the system decide when to switch layouts.
 
 ***Why didn't I Use Split View?***
 
@@ -208,3 +216,7 @@ SwiftUI's Split View does not behave as expected on iPhone—it is primarily des
 Due to this design limitation, I had to implement a workaround to manage landscape/portrait while staying as close as possible to the proposed design.
 However, the design does not follow Apple's native patterns or align with the available SwiftUI components.
 For iPad, I did not use preprocessor macros or special cases, as it seemed unnecessary for this challenge. This could be improved in future iterations.
+
+2️⃣
+I did not add unit tests for the main ViewModel due to lack of time.
+However, I believe the most important tests were the ones explicitly requested, which are already covered in `CityRepository`.
